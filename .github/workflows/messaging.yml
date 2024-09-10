@@ -9,7 +9,7 @@
       workflow_dispatch:
     
     env:
-      CONTEXT: './auth'
+      CONTEXT: './messaging'
       SERVICE_TEMPLATE: './messaging/service.template.yaml'
       PROJECT_ID: ${{ vars.PROJECT_ID }}
       GAR_LOCATION: ${{ vars.GAR_LOCATION }}
