@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/tatangharyadi/service/messaging/common/configs"
+	"github.com/tatangharyadi/service/messaging/pkg/firebase"
 )
 
 func main() {
@@ -16,6 +17,12 @@ func main() {
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		logger.Info().Msg("Hello World from service-messaging")
 	})
+
+	h := firebase.Handler{
+		Env:    env,
+		Logger: logger,
+	}
+	r.Mount("/firebase", h.Routes())
 
 	logger.Info().Msgf("Listening %s mode:%s", env.AppEnv, env.AppPort)
 	addr := ":" + env.AppPort

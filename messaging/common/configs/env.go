@@ -9,9 +9,10 @@ import (
 )
 
 type Env struct {
-	AppEnv   string `mapstructure:"APP_ENV"`
-	AppPort  string `mapstructure:"APP_PORT"`
-	OAuthUrl string `mapstructure:"OAUTH_URL"`
+	AppEnv                    string `mapstructure:"APP_ENV"`
+	AppPort                   string `mapstructure:"APP_PORT"`
+	FirebaseProjectId         string `mapstructure:"FIREBASE_PROJECT_ID"`
+	FirebaseServiceAccountKey string `mapstructure:"FIREBASE_SERVICE_ACCOUNT_KEY"`
 }
 
 var logger zerolog.Logger
@@ -23,6 +24,8 @@ func InitEnv() (*Env, zerolog.Logger) {
 	env := Env{}
 	viper.BindEnv("APP_ENV")
 	viper.BindEnv("APP_PORT")
+	viper.BindEnv("FIREBASE_PROJECT_ID")
+	viper.BindEnv("FIREBASE_SERVICE_ACCOUNT_KEY")
 
 	viper.SetConfigFile(".env")
 	err := viper.ReadInConfig()
