@@ -16,6 +16,16 @@ spec:
           value: 'PROD'
         - name: APP_PORT
           value: '8080'
+        - name: FIREBASE_PROJECT_ID
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: firebase_project_id
+        - name: FIREBASE_SERVICE_ACCOUNT_KEY
+          valueFrom:
+            secretKeyRef:
+              key: latest
+              name: firebase_service_account_key
   traffic:
   - percent: 100
     latestRevision: true
