@@ -2,14 +2,32 @@ package firebase
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/messaging"
 	"google.golang.org/api/option"
+
+	pubsub "github.com/tatangharyadi/pos-common/common/pubsub"
 )
 
+type QrPayment struct {
+	Token string `json:"token"`
+}
+
 func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
+	var body pubsub.PubSubMessage
+	err := json.NewDecoder(r.Body).Decode(&body)
+	if err != nil {
+		h.Logger.Error().Msgf("error decoding request body: %v\n", err)
+		http.Error(w, "error decoding request body", http.StatusBadRequest)
+		return
+	}
+
+	var qrPayment QrPayment
+	json.Unmarshal(body.Message.Data, &qrPayment)
+
 	h.Logger.Info().Msg("firebase: SendMessage sending...")
 
 	config := &firebase.Config{ProjectID: h.Env.FirebaseProjectId}
@@ -27,7 +45,6 @@ func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
 		h.Logger.Fatal().Msgf("error getting Messaging client: %v\n", err)
 	}
 
-	registrationToken := "diZjYadBT0KKj1YRZQwQp7:APA91bEnmxuYzvCdvx8uqIr0AlFbHfhPOBAQzdvVmi3JUfzzGaKeo56JIiyMTKmYtJOfx-2KiGNKM0OhBAjrwusFzGlWb7QhDwOGrKGOdgA3n5zycjjUzAeojqamw8NYxwzWp0NUHOyE"
 	message := &messaging.Message{
 		Notification: &messaging.Notification{
 			Title: "FCM Message",
@@ -37,7 +54,7 @@ func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
 			"score": "850",
 			"time":  "2:45",
 		},
-		Token: registrationToken,
+		Token: qrPayment.Token,
 	}
 	response, err := client.Send(ctx, message)
 	if err != nil {
