@@ -13,7 +13,11 @@ import (
 )
 
 type QrPayment struct {
-	Token string `json:"token"`
+	Token     string `json:"token"`
+	Title     string `json:"title"`
+	Body      string `json:"body"`
+	ReceiptId string `json:"receipt_id"`
+	Status    string `json:"status"`
 }
 
 func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
@@ -47,12 +51,12 @@ func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
 
 	message := &messaging.Message{
 		Notification: &messaging.Notification{
-			Title: "FCM Message",
-			Body:  "This is an FCM Message",
+			Title: qrPayment.Title,
+			Body:  qrPayment.Body,
 		},
 		Data: map[string]string{
-			"score": "850",
-			"time":  "2:45",
+			"orderId": qrPayment.ReceiptId,
+			"status":  qrPayment.Status,
 		},
 		Token: qrPayment.Token,
 	}
