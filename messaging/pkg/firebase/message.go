@@ -55,8 +55,8 @@ func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
 			Body:  qrPayment.Body,
 		},
 		Data: map[string]string{
-			"orderId": qrPayment.ReceiptId,
-			"status":  qrPayment.Status,
+			"orderId": "ID123",
+			"status":  "SUCCESS",
 		},
 		Token: qrPayment.Token,
 	}
