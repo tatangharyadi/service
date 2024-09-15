@@ -12,12 +12,20 @@ import (
 	pubsub "github.com/tatangharyadi/pos-common/common/pubsub"
 )
 
+type Notification struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+}
+
+type QrPaymentData struct {
+	Status      string `json:"status"`
+	ReferenceId string `json:"reference_id"`
+}
+
 type QrPayment struct {
-	Token     string `json:"token"`
-	Title     string `json:"title"`
-	Body      string `json:"body"`
-	ReceiptId string `json:"receipt_id"`
-	Status    string `json:"status"`
+	Token        string        `json:"token"`
+	Notification Notification  `json:"notification"`
+	Data         QrPaymentData `json:"data"`
 }
 
 func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
@@ -51,12 +59,12 @@ func (h Handler) SendMessage(w http.ResponseWriter, r *http.Request) {
 
 	message := &messaging.Message{
 		Notification: &messaging.Notification{
-			Title: qrPayment.Title,
-			Body:  qrPayment.Body,
+			Title: qrPayment.Notification.Title,
+			Body:  qrPayment.Notification.Body,
 		},
 		Data: map[string]string{
-			"orderId": "ID123",
-			"status":  "SUCCESS",
+			"orderId": qrPayment.Data.ReferenceId,
+			"status":  qrPayment.Data.Status,
 		},
 		Token: qrPayment.Token,
 	}
